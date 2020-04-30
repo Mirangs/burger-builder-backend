@@ -1,9 +1,9 @@
 const path = require('path');
 
 const express = require('express');
-const app = express();
 const cors = require('cors');
 
+require('./auth/local');
 require('./model/db').connect((err, client) => {
   console.log('Database: ', {
     user: client.user,
@@ -12,6 +12,8 @@ require('./model/db').connect((err, client) => {
     host: client.host,
   });
 });
+
+const app = express();
 
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, 'client', 'build')));
@@ -26,6 +28,7 @@ app.get('/api', (req, res) => {
 app.use('/api/user', require('./routes/usersRouter'));
 app.use('/api/country', require('./routes/countriesRouter'));
 app.use('/api/ingredient', require('./routes/ingredientsRouter'));
+app.use('/api/auth', require('./routes/authRouter'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));

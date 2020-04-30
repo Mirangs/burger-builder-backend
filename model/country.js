@@ -2,7 +2,7 @@ const pool = require('./db');
 
 const getCountries = async () => {
   const results = await pool.query('SELECT * FROM country');
-  return { data: [...results.rows], length: results.rowCount };
+  return results.rows;
 };
 
 const getCountryById = async (id) => {
