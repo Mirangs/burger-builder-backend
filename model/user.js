@@ -17,6 +17,16 @@ const getUserByEmail = async (email) => {
   return result.rows[0];
 };
 
+const getUserById = async (id) => {
+  const result = await pool.query(`SELECT * FROM "user" WHERE id=${id}`);
+
+  if (result.rowCount === 0) {
+    return { message: 'There is no user with this id' };
+  }
+
+  return result.rows[0];
+};
+
 const getUserRoles = async () => {
   const result = await pool.query(
     `SELECT * FROM user_role WHERE name <> 'Administrator'`
@@ -62,4 +72,5 @@ module.exports = {
   getUserByEmail,
   getUserRoles,
   addUser,
+  getUserById,
 };

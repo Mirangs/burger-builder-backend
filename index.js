@@ -29,6 +29,7 @@ app.use('/api/user', require('./routes/usersRouter'));
 app.use('/api/country', require('./routes/countriesRouter'));
 app.use('/api/ingredient', require('./routes/ingredientsRouter'));
 app.use('/api/auth', require('./routes/authRouter'));
+app.use('/api/order', require('./routes/orderRouter'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
