@@ -3,6 +3,7 @@ services:
   web:
     container_name: burger-builder
     build: .
+    image: burger-builder
     command: yarn start
     restart: always
     volumes: 
