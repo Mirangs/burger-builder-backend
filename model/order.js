@@ -7,7 +7,7 @@ const getOrdersByUserId = async (id) => {
   const results = Promise.all(
     orders.rows.map(async (order) => {
       const ingredients = await pool.query(
-        `select ingredient.name, amount from order_ingredient inner join ingredient on ingredient.id = order_ingredient.ingredient_id WHERE order_id = ${order.id}`
+        `SELECT ingredient.name, amount FROM order_ingredient INNER JOIN ingredient ON ingredient.id = order_ingredient.ingredient_id WHERE order_id = ${order.id}`
       );
 
       return {
