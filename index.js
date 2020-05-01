@@ -5,12 +5,18 @@ const cors = require('cors');
 
 require('./auth/local');
 require('./model/db').connect((err, client) => {
-  console.log('Database: ', {
-    user: client.user,
-    database: client.database,
-    port: client.port,
-    host: client.host,
-  });
+  if (err) {
+    console.log(err);
+  } else if (!client) {
+    console.log('Something went wrong');
+  } else {
+    console.log('Database: ', {
+      user: client.user,
+      database: client.database,
+      port: client.port,
+      host: client.host,
+    });
+  }
 });
 
 const app = express();
