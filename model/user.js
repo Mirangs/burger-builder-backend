@@ -44,6 +44,7 @@ const addUser = async (userData) => {
     country,
     role,
     phone,
+    name,
   } = userData;
   const res = await pool.query(
     `SELECT * FROM "user" WHERE email = '${userData.email}'`
@@ -59,7 +60,7 @@ const addUser = async (userData) => {
     const insert = await pool.query(
       `INSERT INTO "user" VALUES(DEFAULT, '${email}', '${hashedPassword}', ${
         deliveryMethod === 'fastest' ? false : true
-      }, '${street}', ${zipCode}, ${country}, ${role}, '${phone}')`
+      }, '${street}', ${zipCode}, ${country}, ${role}, '${phone}', '${name}')`
     );
     return insert.rowCount;
   } catch (err) {
