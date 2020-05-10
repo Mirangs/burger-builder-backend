@@ -1,10 +1,17 @@
 const pool = require('./db');
 
-const getOrdersByUserId = async (id) => {
+const getOrdersByUserId = async ({ id, limit, offset, orderBy }) => {
+  const searhQuery = `user_id = ${id} ORDER BY total_price ${
+    orderBy === 'asc' ? 'ASC' : orderBy === 'desc' ? 'DESC' : ''
+  }`;
+
   const orders = await pool.query(
-    `SELECT * FROM "order" WHERE user_id = ${id}`
+    `SELECT * FROM "order" WHERE ${searhQuery} LIMIT ${limit} OFFSET ${offset}`
   );
-  const results = Promise.all(
+  const count = await pool.query(
+    `SELECT COUNT(*) FROM "order" WHERE user_id = ${id}`
+  );
+  const results = await Promise.all(
     orders.rows.map(async (order) => {
       const ingredients = await pool.query(
         `SELECT ingredient.name, amount FROM order_ingredient INNER JOIN ingredient ON ingredient.id = order_ingredient.ingredient_id WHERE order_id = ${order.id}`
@@ -17,7 +24,10 @@ const getOrdersByUserId = async (id) => {
     })
   );
 
-  return results;
+  return {
+    count: count.rows[0].count,
+    orders: [...results],
+  };
 };
 
 const addOrder = async (orderData) => {
@@ -42,7 +52,15 @@ const addOrder = async (orderData) => {
   }
 };
 
+const getOrdersCountByUser = async (id) => {
+  const result = await pool.query(
+    `SELECT COUNT(*) FROM "order" WHERE user_id = ${id}`
+  );
+  return result.rows[0].count;
+};
+
 module.exports = {
   getOrdersByUserId,
   addOrder,
+  getOrdersCountByUser,
 };

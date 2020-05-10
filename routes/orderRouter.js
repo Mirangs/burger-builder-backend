@@ -4,8 +4,15 @@ const router = express.Router();
 const { getOrdersByUserId, addOrder } = require('../model/order');
 
 router.get('/:id', async (req, res) => {
-  const orders = await getOrdersByUserId(req.params.id);
-  return res.json(await orders);
+  const { id } = req.params;
+  const { limit, offset, orderBy } = req.query;
+  const orders = await getOrdersByUserId({
+    id,
+    limit,
+    offset,
+    orderBy,
+  });
+  return res.json(orders);
 });
 
 router.post('/:id', async (req, res) => {
