@@ -6,7 +6,7 @@ const getOrdersByUserId = async ({ id, limit, offset, orderBy }) => {
   }`;
 
   const orders = await pool.query(
-    `SELECT * FROM "order" WHERE ${searhQuery} LIMIT ${limit} OFFSET ${offset}`
+    `SELECT "order".id, total_price, user_id, restaurant_id, order_status.name as order_status, order_date FROM "order" INNER JOIN order_status ON order_status.id = order_status_id WHERE ${searhQuery} LIMIT ${limit} OFFSET ${offset}`
   );
   const count = await pool.query(
     `SELECT COUNT(*) FROM "order" WHERE user_id = ${id}`
