@@ -1,6 +1,7 @@
 /node_modules
 /client/
 /.vscode
+/dist
 
 .env
 database.env
