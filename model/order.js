@@ -59,8 +59,68 @@ const getOrdersCountByUser = async (id) => {
   return result.rows[0].count;
 };
 
+const getOrdersForCourier = async () => {
+  const result = await pool.query(`
+    SELECT "order".id, total_price, phone, "user".name AS user_name, order_status_id, restaurant.street AS from, "user".id as user_id, "user".street AS to, delivery_method, zip_code
+    FROM "order" 
+    INNER JOIN "user" ON "user".id = "order".user_id 
+    INNER JOIN restaurant ON restaurant.id = "order".restaurant_id
+    WHERE order_status_id = 4 OR order_status_id = 5 
+  `);
+
+  return result.rows;
+};
+
+const getOrdersByRestaurant = async (id) => {
+  const orders = await pool.query(
+    `
+      SELECT "order".id, total_price, "user".phone AS user_phone, "user".name AS user_name, order_status_id AS order_status, order_date, "user".id as user_id
+      FROM "order" 
+      INNER JOIN "user" ON "user".id = "order".user_id 
+      WHERE restaurant_id = ${id}
+    `
+  );
+
+  const results = await Promise.all(
+    orders.rows.map(async (order) => {
+      const ingredients = await pool.query(
+        `SELECT ingredient.name, amount FROM order_ingredient INNER JOIN ingredient ON ingredient.id = order_ingredient.ingredient_id WHERE order_id = ${order.id}`
+      );
+
+      return {
+        ...order,
+        ingredients: ingredients.rows,
+      };
+    })
+  );
+
+  return results;
+};
+
+const getOrderStatuses = async () => {
+  const result = await pool.query('SELECT * FROM order_status');
+  return result.rows;
+};
+
+const updateOrder = async (orderData) => {
+  const { id, total_price, user_id, order_status } = orderData;
+
+  const inserted = await pool.query(`
+    UPDATE "order"
+    SET total_price = ${total_price}, user_id = ${user_id}, order_status_id = ${order_status}
+    WHERE "order".id = ${id}
+    RETURNING id
+  `);
+
+  return inserted.rows[0].id;
+};
+
 module.exports = {
   getOrdersByUserId,
   addOrder,
   getOrdersCountByUser,
+  getOrdersByRestaurant,
+  getOrderStatuses,
+  getOrdersForCourier,
+  updateOrder,
 };
